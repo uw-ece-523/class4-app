@@ -39,8 +39,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startCameraActivity() {
-        val intent = Intent(this, CameraActivity::class.java)
-        startActivity(intent)
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q){
+            // Use old-school camera approach
+            val intent = Intent(this, CameraPreQuinceActivity::class.java)
+            startActivity(intent)
+        } else{
+            // Use CameraX
+            val intent = Intent(this, CameraActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
 
