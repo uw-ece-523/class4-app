@@ -36,6 +36,8 @@ class CameraActivity : AppCompatActivity() {
     lateinit var binding: ActivityCameraBinding
     val REQUEST_CODE_FOR_PERMISSIONS = 1902
 
+    private val BLUR_AMOUNT = 50
+
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
 
@@ -179,7 +181,7 @@ class CameraActivity : AppCompatActivity() {
         buffer.get(bytes)
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 
-        return bitmapBlur(bitmap, 1.0f, 100)
+        return bitmapBlur(bitmap, 1.0f, BLUR_AMOUNT)
     }
 
 
