@@ -19,7 +19,9 @@ import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import com.google.mlkit.vision.common.InputImage
 import edu.uw.ee523.customviewactivity.BitmapOps.Companion.bitmapBlur
+import edu.uw.ee523.customviewactivity.BitmapOps.Companion.doFaceDetection
 import edu.uw.ee523.customviewactivity.databinding.ActivityCameraPreQuinceBinding
 import java.io.IOException
 import java.util.ArrayList
@@ -165,6 +167,7 @@ class CameraPreQuinceActivity : AppCompatActivity() {
                 ImageDecoder.decodeBitmap(source)
             }
             previewPane?.setImageBitmap(imageBitmap) //previewPane is the ImageView from the layout
+            doFaceDetection(InputImage.fromBitmap(imageBitmap, 0))
             imageView?.setImageBitmap(bitmapBlur(imageBitmap, 0.25f, 50))
         } catch (e: IOException) {
         }

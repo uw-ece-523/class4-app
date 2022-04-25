@@ -1,9 +1,25 @@
 package edu.uw.ee523.customviewactivity
 
+import android.app.Activity
+import android.content.Context.CAMERA_SERVICE
 import android.graphics.Bitmap
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
+import android.media.Image
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.*
 
 class BitmapOps {
+
+
     companion object {
+        val MY_TAG = "BitmapOps"
         /**
          * The idea of a blur is that for every pixel in an image,
          * we average the value of the current pixel with the pixels
@@ -244,5 +260,111 @@ class BitmapOps {
             bitmap.setPixels(pix, 0, w, 0, 0, w, h)
             return bitmap
         }
+
+
+        fun doFaceDetection(image: InputImage) {
+            // High-accuracy landmark detection and face classification
+            val highAccuracyOpts = FaceDetectorOptions.Builder()
+                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+                .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+                .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+                .build()
+
+//        image = InputImage.fromFilePath(context, uri)
+//        val image = InputImage.fromMediaImage(image, rotation)
+
+            val detector = FaceDetection.getClient(highAccuracyOpts)
+            val result = detector.process(image)
+                .addOnSuccessListener { faces ->
+                    // Task completed successfully
+                    Log.e(MY_TAG, "Got faces!!")
+                    handleFaces(faces)
+                }
+                .addOnFailureListener { e ->
+                    // Task failed with an exception
+                    Log.e(MY_TAG, "did not get faces")
+                }
+        }
+
+        fun handleFaces(faces: MutableList<Face>) {
+            for (face in faces) {
+                val bounds = face.boundingBox
+                val rotY = face.headEulerAngleY // Head is rotated to the right rotY degrees
+                val rotZ = face.headEulerAngleZ // Head is tilted sideways rotZ degrees
+
+                // If landmark detection was enabled (mouth, ears, eyes, cheeks, and
+                // nose available):
+                val leftEar = face.getLandmark(FaceLandmark.LEFT_EAR)
+                leftEar?.let {
+                    val leftEarPos = leftEar.position
+                }
+
+                // If contour detection was enabled:
+                val leftEyeContour = face.getContour(FaceContour.LEFT_EYE)?.points
+                val upperLipBottomContour = face.getContour(FaceContour.UPPER_LIP_BOTTOM)?.points
+
+                // If classification was enabled:
+                if (face.smilingProbability != null) {
+                    val smileProb = face.smilingProbability
+                }
+                if (face.rightEyeOpenProbability != null) {
+                    val rightEyeOpenProb = face.rightEyeOpenProbability
+                }
+
+                // If face tracking was enabled:
+                if (face.trackingId != null) {
+                    val id = face.trackingId
+                }
+            }
+        }
+/*
+    private class YourImageAnalyzer : ImageAnalysis.Analyzer {
+
+        override fun analyze(imageProxy: ImageProxy) {
+            val mediaImage = imageProxy.image
+            if (mediaImage != null) {
+                val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                // Pass image to an ML Kit Vision API
+                // ...
+            }
+        }
+    }
+
+    private val ORIENTATIONS = SparseIntArray()
+
+    init {
+        ORIENTATIONS.append(Surface.ROTATION_0, 0)
+        ORIENTATIONS.append(Surface.ROTATION_90, 90)
+        ORIENTATIONS.append(Surface.ROTATION_180, 180)
+        ORIENTATIONS.append(Surface.ROTATION_270, 270)
+    }
+
+    */
+        /**
+         * Get the angle by which an image must be rotated given the device's current
+         * orientation.
+         *//*
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Throws(CameraAccessException::class)
+    private fun getRotationCompensation(cameraId: String, activity: Activity, isFrontFacing: Boolean): Int {
+        // Get the device's current rotation relative to its "native" orientation.
+        // Then, from the ORIENTATIONS table, look up the angle the image must be
+        // rotated to compensate for the device's rotation.
+        val deviceRotation = activity.windowManager.defaultDisplay.rotation
+        var rotationCompensation = ORIENTATIONS.get(deviceRotation)
+
+        // Get the device's sensor orientation.
+        val cameraManager = activity.getSystemService(CAMERA_SERVICE) as CameraManager
+        val sensorOrientation = cameraManager
+            .getCameraCharacteristics(cameraId)
+            .get(CameraCharacteristics.SENSOR_ORIENTATION)!!
+
+        if (isFrontFacing) {
+            rotationCompensation = (sensorOrientation + rotationCompensation) % 360
+        } else { // back-facing
+            rotationCompensation = (sensorOrientation - rotationCompensation + 360) % 360
+        }
+        return rotationCompensation
+    }*/
     }
 }
