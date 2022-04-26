@@ -12,11 +12,20 @@
     tools:context=".MainActivity">
 
     <Button
+        android:id="@+id/buttonStartSensors"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Start Sensor Activity"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/buttonTakePicture"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Start Camera Activity"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/buttonStartSensors"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

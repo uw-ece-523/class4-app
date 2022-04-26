@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         var binding:ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         binding.buttonTakePicture.setOnClickListener { startCameraActivity() }
+
+        binding.buttonStartSensors.setOnClickListener { startSensorActivity() }
     }
 
     fun startCameraActivity() {
@@ -49,6 +51,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+    }
+
+    fun startSensorActivity() {
+        val intent = Intent(this, SensorClassActivity::class.java)
+        startActivity(intent)
     }
 
 
